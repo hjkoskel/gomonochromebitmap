@@ -1,14 +1,12 @@
 # gomonochromebitmap
 Golang library for monochrome image operations
 
-I developed this library for my "retrocomputing"/emulator projects. 
-This library is only for black-white images
+I developed this library for my personal "retrocomputing"/emulator project. 
+This library is only for black-white images.
 
-This repository is going to include operations like
+At the moment some basic functions are implemented in very naive way. I just need this library for getting things running
+I will provide more optimized versions after I complete my other project using this library.
 
--Converting (RGBA) image to monochrome with threshold
--Bresenham's Line / Circle algorithm
--Drawing sprites
--Small pixel font rendering (line wrap options etc...)
 
-Codes are released soon 
+##example
+Please check further examples from gomonochromebitmap_test.go
