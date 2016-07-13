@@ -342,7 +342,10 @@ func(p *MonoBitmap)DrawBitmap(source MonoBitmap,sourceArea image.Rectangle,targe
 }
 
 //Prints message on screen.Creates new lines on \n 
-func(p *MonoBitmap)Print(text string,font map[rune]MonoBitmap,lineSpacing int,gap int,area image.Rectangle, drawTrue bool, drawFalse bool,invert bool,wrap bool){
+//Returns rectangle where text was printed
+func(p *MonoBitmap)Print(text string,font map[rune]MonoBitmap,lineSpacing int,gap int,area image.Rectangle, drawTrue bool, drawFalse bool,invert bool,wrap bool) image.Rectangle{
+    result:=image.Rectangle{Min:area.Min,Max:area.Min}
+    
     x:=area.Min.X
     y:=area.Min.Y
     //dim:=target.Bounds().Max
@@ -369,10 +372,13 @@ func(p *MonoBitmap)Print(text string,font map[rune]MonoBitmap,lineSpacing int,ga
             }
             if(!wrap)||(x+f.W<=area.Max.X){
                 p.DrawBitmap(f,f.Bounds(),image.Point{X:x,Y:y},drawTrue,drawFalse,invert)
+                result.Max.X=intMax(result.Max.X,x+f.W)
+                result.Max.Y=intMax(result.Max.Y,y+f.H)
                 x+=f.W+gap
             }
         }
     }
+    return result
 }
 
 //Private Utils
