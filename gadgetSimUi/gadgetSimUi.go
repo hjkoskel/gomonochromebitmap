@@ -8,7 +8,6 @@ Rough but can help when developing ui and button layout for gadget.
 package gadgetSimUi
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 	"strconv"
@@ -48,8 +47,8 @@ type ButtonSettings struct {
 	Corner     XyIntPair `json:"corner"`
 	Dimensions XyIntPair `json:"dimensions,omitempty"`
 
-	ImageFile        string `json:"imageFile,omitempty"`
-	PressedImageFile string `json:"pressedImageFile,omitempty"`
+	DebugEdges bool //should print debug edges for checking placement
+	DebugColor color.RGBA
 }
 
 func (p *ButtonSettings) Hits(x int, y int) bool {
@@ -68,7 +67,15 @@ type GadgetWindow struct {
 	ToDisplay chan DisplayUpdate
 
 	//Internal
-	window *sdl.Window
+	usedWindowArea sdl.Rect //simplifies some coding and button mapping etc...
+	window         *sdl.Window
+}
+
+func (p *GadgetWindow) ScaleWinOnPicCoord(x int, y int) (int, int) {
+	b := p.BgImage.Bounds()
+	a := p.usedWindowArea
+	//fmt.Printf("Used window corner=(%v,%v) dim=(%v,%v)\n", a.X, a.Y, a.W, a.H)
+	return (int(b.Dx()) * (x - int(a.X))) / int(a.W), (int(b.Dy()) * (y - int(a.Y))) / int(a.H)
 }
 
 func imageToSdlSurf(i image.Image) (*sdl.Surface, error) {
@@ -140,10 +147,13 @@ func (p *GadgetWindow) Run() error {
 			switch t := event.(type) {
 			case *sdl.MouseButtonEvent:
 				//fmt.Printf("TODO MOUSE BUTTON %#v\n", event)
-				//fmt.Printf("HIIRI=%#v\n", t)
+				//fmt.Printf("MOUSE=%#v\n", t)
 				if 0 < t.State {
 					//fmt.Printf("Nappi alas x:%v y:%v\n", t.X, t.Y)
-					hits := p.HitsToId(int(t.X), int(t.Y))
+					//Let's do scaling
+					xp, yp := p.ScaleWinOnPicCoord(int(t.X), int(t.Y))
+					hits := p.HitsToId(xp, yp)
+					//hits := p.HitsToId(int(t.X), int(t.Y))
 					if 0 < len(hits) {
 						//fmt.Printf("HITTED to %v\n", hits)
 						p.FromKeys <- KeyboardStatus{KeysDown: []string{hits}}
@@ -156,7 +166,7 @@ func (p *GadgetWindow) Run() error {
 
 				if t.Event == sdl.WINDOWEVENT_SIZE_CHANGED {
 					//fmt.Printf("TODO WINDOW EVENT %#v\n", event)
-					fmt.Printf("Windowevent size changed\n")
+					//fmt.Printf("Windowevent size changed\n")
 					p.Render()
 					p.window.UpdateSurface()
 				}
@@ -209,7 +219,21 @@ func (p *GadgetWindow) Render() error {
 	Xoff := (int32(winW) - int32(bgSurf.W)) / 2
 	//fmt.Printf("Xoff=%v\n", Xoff)
 
-	bgSurf.Blit(&sdl.Rect{X: 0, Y: 0, W: bgSurf.W, H: bgSurf.H}, surface, &sdl.Rect{X: Xoff, Y: 0, W: bgSurf.W, H: bgSurf.H})
+	p.usedWindowArea = sdl.Rect{X: Xoff, Y: 0, W: bgSurf.W, H: bgSurf.H}
+	for _, but := range p.Buttons {
+		if but.DebugEdges {
+			r := sdl.Rect{
+				X: int32(but.Corner.X*picW) / int32(b.X),
+				Y: int32(but.Corner.Y*picH) / int32(b.Y),
+				W: int32(but.Dimensions.X*picW) / int32(b.X),
+				H: int32(but.Dimensions.Y*picH) / int32(b.Y),
+			}
+			c := but.DebugColor
+			bgSurf.FillRect(&r, uint32(c.A)<<24|uint32(c.R)<<16|uint32(c.G)<<8|uint32(c.B))
+		}
+	}
+
+	bgSurf.Blit(&sdl.Rect{X: 0, Y: 0, W: bgSurf.W, H: bgSurf.H}, surface, &p.usedWindowArea)
 	//Draw all displays, scaled and placed
 	scaleFactor := float32(picW) / float32(b.X)
 	for _, dis := range p.MonoDisplays {
