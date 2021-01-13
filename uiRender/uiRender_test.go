@@ -8,49 +8,78 @@ import (
     "testing"
     "github.com/hjkoskel/gomonochromebitmap"
     "github.com/hjkoskel/gomonochromebitmap/uiRender"
-    //"image"
     "image/color"
     "image/png"
     "os"
 )
-    
+
 func TestSimple(t *testing.T){
     fmt.Printf("--- Testing uiRender ---\n")
-        
-        colTrue:=color.RGBA{R:255,G:255,B:255,A:255}    
+
+    colTrue:=color.RGBA{R:255,G:255,B:255,A:255}
     colFalse:=color.RGBA{R:0,G:0,B:0,A:255}
-    //test1:=gomonochromebitmap.NewMonoBitmap(128,64,false)
-    //test1.Fill(image.Rect(40,20,60,40),true)
-    
-    testfont1:=gomonochromebitmap.GetFont_8x8()    
-   
-    textArr:=[]string{ "Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrott", "Golf", "Hotel", "India", "Juliet" ,"Kilo" ,"Lima" ,"Mike" ,"November" ,"Oscar" ,"Papa" ,"Quebec" ,"Romeo" ,"Sierra" ,"Tango"}    
-    //GetStringBitmaps(arr []string,font map[rune]gomonochromebitmap.MonoBitmap,w int,h int,lineSpacing,gap int)    
+    testfont1:=gomonochromebitmap.GetFont_8x8()
+
+    textArr:=[]string{ "Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrott", "Golf", "Hotel", "India", "Juliet" ,"Kilo" ,"Lima" ,"Mike" ,"November" ,"Oscar" ,"Papa" ,"Quebec" ,"Romeo" ,"Sierra" ,"Tango"}
+
     menu1:=uiRender.ScrollVerticalSelectMenu{
         Bitmaps:uiRender.GetStringBitmaps(textArr,testfont1,127,32,8,1),
         SelectedIndex:2,
         Scroll:0,
         InvertSelection:true,
         Arrow:nil,
-        ScrollBar:true,
+        ScrollBar:1,
     }
-    
+
     menu2:=uiRender.ScrollVerticalSelectMenu{
         Bitmaps:uiRender.GetStringBitmaps(textArr,testfont1,127,32,8,1),
         SelectedIndex:5,
         Scroll:0,
         InvertSelection:true,
         Arrow:nil,
-        ScrollBar:true,
+        ScrollBar:1,
     }
-    
+
     test1:=menu1.Render(128,64)
     out1,_ := os.Create("test1.png")
     png.Encode(out1,test1.GetImage(colTrue,colFalse))
     out1.Close()
-    
+
     test2:=menu2.Render(128,64)
     out2,_ := os.Create("test2.png")
     png.Encode(out2,test2.GetImage(colTrue,colFalse))
     out2.Close()
+
+		//Large version, is this scalable
+		testfont2:=gomonochromebitmap.GetFont_11x16()
+
+		largemenu1:=uiRender.ScrollVerticalSelectMenu{
+        Bitmaps:uiRender.GetStringBitmaps(textArr,testfont2,127,32,16,1),
+        SelectedIndex:2,
+        Scroll:0,
+        InvertSelection:true,
+        Arrow:nil,
+        ScrollBar:7,
+    }
+
+    largemenu2:=uiRender.ScrollVerticalSelectMenu{
+        Bitmaps:uiRender.GetStringBitmaps(textArr,testfont2,127,32,16,1),
+        SelectedIndex:5,
+        Scroll:0,
+        InvertSelection:true,
+        Arrow:nil,
+        ScrollBar:7,
+    }
+
+    largetest1:=largemenu1.Render(128,64)
+    largeout1,_ := os.Create("largetest1.png")
+    png.Encode(largeout1,largetest1.GetImage(colTrue,colFalse))
+    largeout1.Close()
+
+    largetest2:=largemenu2.Render(128,64)
+    largeout2,_ := os.Create("largetest2.png")
+    png.Encode(largeout2,largetest2.GetImage(colTrue,colFalse))
+    largeout2.Close()
+
+
 }
