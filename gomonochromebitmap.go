@@ -14,8 +14,7 @@ type MonoBitmap struct {
 	H   int
 }
 
-//Initializes empty bitmap
-//fill is default value
+//NewMonoBitmap initializes empty bitmap fill is default value
 func NewMonoBitmap(w int, h int, fill bool) MonoBitmap {
 	result := MonoBitmap{W: w, H: h, Pix: make([]uint32, w*h/32+1)}
 	if fill {
@@ -26,8 +25,7 @@ func NewMonoBitmap(w int, h int, fill bool) MonoBitmap {
 	return result
 }
 
-//Initializes bitmap from image
-//Color conversion: if any Red,Green or Blue value is over threshold then pixel is true
+//NewMonoBitmapFromImage initializes bitmap from image. Color conversion: if any Red,Green or Blue value is over threshold then pixel is true
 func NewMonoBitmapFromImage(img image.Image, area image.Rectangle, threshold byte, invert bool) MonoBitmap {
 	b := img.Bounds()
 	w := b.Max.X
@@ -47,13 +45,12 @@ func NewMonoBitmapFromImage(img image.Image, area image.Rectangle, threshold byt
 	return result
 }
 
+//Bounds returns W,H in Rect struct
 func (p *MonoBitmap) Bounds() image.Rectangle {
 	return image.Rect(0, 0, p.W, p.H)
 }
 
-/*
-Return if does not fill all
-*/
+//RLEdecode decodes run length compressed bitmap data
 func (p *MonoBitmap) RLEdecode(activeFirst bool, data []byte) error {
 	//TODO line drawing... LESS naive solution
 	activeNow := activeFirst
@@ -75,6 +72,7 @@ func (p *MonoBitmap) RLEdecode(activeFirst bool, data []byte) error {
 	return nil
 }
 
+//RLEencodes bitmap in runlength compressed format
 func (p *MonoBitmap) RLEencode(activeFirst bool) []byte {
 	counter := byte(0)
 	activeNow := activeFirst
@@ -102,7 +100,7 @@ func (p *MonoBitmap) RLEencode(activeFirst bool) []byte {
 	return result
 }
 
-//Creates RGBA image from bitmap
+//GetImage Creates RGBA image from bitmap
 func (p *MonoBitmap) GetImage(trueColor color.Color, falseColor color.Color) image.Image {
 	result := image.NewRGBA(image.Rect(0, 0, p.W, p.H))
 	for x := 0; x < p.W; x++ {

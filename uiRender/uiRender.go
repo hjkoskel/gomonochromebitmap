@@ -3,7 +3,7 @@ Module for rendering frequently needed UI-components on picture
 Renders and provides functions for manipulating state of
 */
 
-package uiRender
+package uirender
 
 import (
 	"image"
@@ -17,7 +17,7 @@ type ScrollVerticalSelectMenu struct {
 	Scroll          int //where this thing is scrolled
 	InvertSelection bool
 	Arrow           *gomonochromebitmap.MonoBitmap //Moves on left side
-	ScrollBar       int //How many pixels
+	ScrollBar       int                            //How many pixels
 }
 
 //Helper function for returning bitmaps generated from strings
@@ -83,9 +83,9 @@ func (p *ScrollVerticalSelectMenu) Render(w int, h int) gomonochromebitmap.MonoB
 	}
 
 	//do we need scroll bar
-	if 0<p.ScrollBar {
+	if 0 < p.ScrollBar {
 		//Black background
-		sidebarMargin:=6
+		sidebarMargin := 6
 		sbA := image.Point{X: w - sidebarMargin - p.ScrollBar, Y: 0}
 		sbB := image.Point{X: w - p.ScrollBar, Y: h - 1}
 
@@ -93,7 +93,7 @@ func (p *ScrollVerticalSelectMenu) Render(w int, h int) gomonochromebitmap.MonoB
 
 		//fmt.Printf("ScrollBar height=%v start=%v\n", barHeight, barStart)
 		//result.Vline(w-2, barStart, barStart+barHeight, true)
-		for x:=w-p.ScrollBar;x<w;x++ {
+		for x := w - p.ScrollBar; x < w; x++ {
 			result.Vline(x, barStart, barStart+barHeight, true)
 		}
 
