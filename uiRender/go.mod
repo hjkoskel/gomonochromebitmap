@@ -1,4 +1,4 @@
-module uirender
+module github.com/hjkoskel/gomonochromebitmap/uirender
 
 go 1.18
 

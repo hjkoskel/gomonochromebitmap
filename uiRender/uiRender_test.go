@@ -45,23 +45,19 @@ func TestSimple(t *testing.T) {
 	png.Encode(out1, test1.GetImage(colTrue, colFalse))
 	out1.Close()
 
-	aaa := gomonochromebitmap.BlockGraphicsSettings{
+	aaa := gomonochromebitmap.BlockGraphics{
 		Clear:       false,
 		HaveBorder:  true,
 		BorderColor: gomonochromebitmap.FGANSI_BLUE + gomonochromebitmap.BGANSI_YELLOW,
 		TextColor:   gomonochromebitmap.FGANSI_BRIGHT_RED + gomonochromebitmap.BGANSI_BRIGHT_GREEN}
-	//fmt.Printf("\n%s\n", test1.ToFullBlockChars(aaa))
-	//fmt.Printf("\n%s\n", test1.ToHalfBlockChars(aaa))
-	fmt.Printf("\n%s\n", test1.ToQuadBlockChars(aaa))
+	fmt.Printf("\n%s\n", aaa.ToQuadBlockChars(&test1))
 
-	aaa = gomonochromebitmap.BlockGraphicsSettings{
+	aaa = gomonochromebitmap.BlockGraphics{
 		Clear:       false,
 		HaveBorder:  true,
 		BorderColor: gomonochromebitmap.FGANSI_BLUE + gomonochromebitmap.BGANSI_YELLOW,
 		TextColor:   ""}
-	//fmt.Printf("\n%s\n", test1.ToFullBlockChars(aaa))
-	//fmt.Printf("\n%s\n", test1.ToHalfBlockChars(aaa))
-	fmt.Printf("\n%s\n", test1.ToQuadBlockChars(aaa))
+	fmt.Printf("\n%s\n", aaa.ToQuadBlockChars(&test1))
 
 	test2 := menu2.Render(128, 64)
 	out2, _ := os.Create("test2.png")

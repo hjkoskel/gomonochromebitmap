@@ -115,6 +115,42 @@ func (p *MonoBitmap) GetImage(trueColor color.Color, falseColor color.Color) ima
 	return result
 }
 
+//Use each monochrome bitmap as bit in color palette index. https://en.wikipedia.org/wiki/Planar_(computer_graphics)
+func CreatePlanarColorImage(planes []MonoBitmap, palette []color.Color) (image.Image, error) {
+	if len(palette) == 0 {
+		return nil, fmt.Errorf("palette missing")
+	}
+	if len(planes) == 0 {
+		return nil, fmt.Errorf("no input images")
+	}
+
+	result := image.NewRGBA(planes[0].Bounds())
+	//Check dimensions
+	for _, plane := range planes {
+		if plane.W != planes[0].W || plane.H != planes[0].H {
+			return nil, fmt.Errorf("all bitplanes must have same dimensions")
+		}
+	}
+
+	if 1<<len(planes) != len(palette) {
+		return nil, fmt.Errorf("Have %v bitplanes but pallette have %v entries. Must have %v entries", len(planes), len(palette), 1<<len(planes))
+	}
+
+	for y := 0; y < planes[0].H; y++ {
+		for x := 0; x < planes[0].W; x++ {
+			paletteIndex := uint32(0)
+			for bit, plane := range planes {
+				if plane.GetPix(x, y) {
+					paletteIndex |= 1 << bit
+				}
+			}
+			result.Set(x, y, palette[paletteIndex])
+		}
+	}
+
+	return result, nil
+}
+
 /*
 Generates image that is rendered like it was LCD. Space in between segments is transparent
 upper vs lower color allows to render two color LCD's  (like cyan and yellow strip)
