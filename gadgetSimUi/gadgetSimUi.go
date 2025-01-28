@@ -3,7 +3,6 @@ This sub library is for simulating gadgets on desktop
 Supports keys and monochrome display.
 
 Rough but can help when developing ui and button layout for gadget.
-
 */
 package gadgetSimUi
 

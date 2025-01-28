@@ -124,7 +124,7 @@ func (p *BlockGraphics) edgeRight() string {
 	return sb.String()
 }
 
-//ToFullBlockChars creates console printable version of image ' ','█'
+// ToFullBlockChars creates console printable version of image ' ','█'
 func (p *BlockGraphics) ToFullBlockChars(bitmap *MonoBitmap) string {
 	var sb strings.Builder
 
@@ -132,7 +132,7 @@ func (p *BlockGraphics) ToFullBlockChars(bitmap *MonoBitmap) string {
 	for y := 0; y < bitmap.H; y++ {
 		sb.WriteString(p.edgeLeft())
 		for x := 0; x < bitmap.W; x++ {
-			if bitmap.GetPix(x, y) {
+			if bitmap.GetPixNoCheck(x, y) {
 				sb.WriteRune('█')
 			} else {
 				sb.WriteRune(' ')
@@ -144,7 +144,7 @@ func (p *BlockGraphics) ToFullBlockChars(bitmap *MonoBitmap) string {
 	return sb.String()
 }
 
-//ToHalfBlockChars ' ', '▀', '▄', '█'
+// ToHalfBlockChars ' ', '▀', '▄', '█'
 func (p *BlockGraphics) ToHalfBlockChars(bitmap *MonoBitmap) string {
 	var sb strings.Builder
 	sb.WriteString(p.titleRow(bitmap.W))
@@ -152,7 +152,7 @@ func (p *BlockGraphics) ToHalfBlockChars(bitmap *MonoBitmap) string {
 		sb.WriteString(p.edgeLeft())
 		for x := 0; x < bitmap.W; x++ {
 			i := 0
-			if bitmap.GetPix(x, y) { //upper
+			if bitmap.GetPixNoCheck(x, y) { //upper
 				i++
 			}
 			if bitmap.GetPix(x, y+1) { //lower, GetPix returns false if goes over in y direction
@@ -166,7 +166,7 @@ func (p *BlockGraphics) ToHalfBlockChars(bitmap *MonoBitmap) string {
 	return sb.String()
 }
 
-//ToQuadBlockChars ' ', '▘', '▝', '▀','▖', '▌', '▞', '▛','▗', '▚', '▐', '▜','▄', '▙', '▟', '█'
+// ToQuadBlockChars ' ', '▘', '▝', '▀','▖', '▌', '▞', '▛','▗', '▚', '▐', '▜','▄', '▙', '▟', '█'
 func (p *BlockGraphics) ToQuadBlockChars(bitmap *MonoBitmap) string {
 	var sb strings.Builder
 	w := int(math.Ceil(float64(bitmap.W) / 2))
@@ -176,7 +176,7 @@ func (p *BlockGraphics) ToQuadBlockChars(bitmap *MonoBitmap) string {
 		sb.WriteString(p.edgeLeft())
 		for x := 0; x < bitmap.W; x += 2 {
 			i := 0
-			if bitmap.GetPix(x, y) { //Q0▘
+			if bitmap.GetPixNoCheck(x, y) { //Q0▘
 				i++
 			}
 			if bitmap.GetPix(x+1, y) { //Q1▝
@@ -196,7 +196,6 @@ func (p *BlockGraphics) ToQuadBlockChars(bitmap *MonoBitmap) string {
 		}
 		sb.WriteString(p.edgeRight())
 	}
-
 	sb.WriteString(p.bottomRow(w))
 	return sb.String()
 }
